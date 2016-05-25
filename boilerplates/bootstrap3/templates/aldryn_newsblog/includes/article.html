@@ -1,0 +1,91 @@
+{% load i18n apphooks_config_tags cms_tags sekizai_tags staticfiles thumbnail %}
+
+<article class="aldryn-newsblog-article{% if article.is_featured %} aldryn-newsblog-featured{% endif %}{% if not article.published %} unpublished{% endif %}{% if article.future %} future{% endif %}">
+    {% comment "Removed featured image from list. Featured image will be used for slideshow" %}
+    {% if article.featured_image_id %}
+        <p class="visual">
+            {% if not detail_view %}
+                <a href="{{ article.get_absolute_url }}">
+            {% endif %}
+            <img src="{% thumbnail article.featured_image.image 800x450 crop subject_location=article.featured_image.subject_location %}" alt="{{ article.featured_image.alt }}" class="img-responsive">
+            {% if not detail_view %}
+                </a>
+            {% endif %}
+        </p>
+    {% endif %}
+    {% endcomment %}
+
+    {% if article.categories %}
+        <p class="category">
+            {% for category in article.categories.all %}
+                <a href="{% namespace_url 'article-list-by-category' category.slug namespace=namespace default='' %}">{{ category.name }}</a>{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+        </p>
+    {% endif %}
+
+    <div class="row">
+        <div class="col-xs-12">
+            <h2 class="blog-title">
+                <a href="{% namespace_url 'article-detail' article.slug namespace=namespace default='' %}">{{article.title|upper}}</a> 
+                <span class="blog-date">{{ article.publishing_date|date:"M d"|upper}}</span>
+            </h2>
+        </div>
+        {% comment "old method of conjuring title" %}{% endcomment %}
+    </div>
+
+    {% if not detail_view %}
+    <div class="row">
+            <div class="col-xs-12">{% comment "Instead of lead truncate the actual article" %}
+                            <div class="lead">
+                                <!-- if not detail_view -->
+                                {% render_model article "lead_in" "" "" "truncatewords:'20'" %}
+                            </div>
+                        {% endcomment %}
+                        <div class="content-preview">
+                            {% render_placeholder article.content language placeholder_language|truncatewords_html:2%}
+                        </div>
+            </div>
+    </div>
+    {% endif %}
+
+    {% if not detail_view %}
+        <div class="row">
+            <div class="col-xs-12 bottom-bar">
+                <div class="sm-buttons"><img src="{% static 'img/social-media-buttons.jpg' %}"></div>
+                <div class="read-more">
+                    <a href="{% namespace_url 'article-detail' article.slug namespace=namespace default='' %}">READ MORE </a>
+                </div>
+            </div>
+        </div>
+        
+    {% endif %}
+
+    {% include "aldryn_newsblog/includes/author.html" with author=article.author %}
+
+    {% if article.tags and detail_view %}
+        <p class="tags">
+            {% for tag in article.tags.all %}
+                <a href="{% namespace_url 'article-list-by-tag' tag=tag.slug namespace=namespace default='' %}">{{ tag.name }}</a>
+            {% endfor %}
+        </p>
+    {% endif %}
+
+    {% comment "We do not want lead displayed in the detailed view" %}
+    {% if detail_view %}
+        <div class="lead">
+        <!-- if detail_view -->
+            {% render_model article "lead_in" %}
+        </div>
+    {% endif %}
+    {% endcomment %}
+
+    {% if detail_view %}
+        <div class="content blog-content">
+        <!-- if detail_view -->
+            {% render_placeholder article.content language placeholder_language %}
+        </div>
+    {% endif %}
+</article>
+
+{% addtoblock "css" %}<link rel="stylesheet" href="{% static 'css/aldryn-newsblog/article.css' %}">
+<link rel="stylesheet" href="{% static 'css/blog.css' %}">{% endaddtoblock %}

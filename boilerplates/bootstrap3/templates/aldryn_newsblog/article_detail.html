@@ -1,0 +1,56 @@
+{% extends "aldryn_newsblog/fullwidth.html" %}
+{% load i18n cms_tags apphooks_config_tags %}
+
+{% block title %}{{ article.title }} - {{ block.super }}{% endblock %}
+{% block breadcrumb %}{% endblock %}
+
+{% block newsblog_content %}
+    <div class="aldryn-newsblog-detail">
+        {% include "aldryn_newsblog/includes/article.html" with detail_view="true" %}
+    </div>
+    {% static_placeholder "newsblog_social" %}
+{% endblock %}
+
+{% block newsblog_footer %}
+    <div class="aldryn-newsblog-pager">
+        <ul class="pager">
+            {% if prev_article %}
+                <li class="previous"><a href="{{ prev_article.get_absolute_url }}"><span aria-hidden="true">&larr;</span> {% trans "Previous Article" %}</a></li>
+            {% else %}
+                <li class="previous"><span class="text-muted"><span aria-hidden="true">&larr;</span> {% trans "Previous Article" %}</span></li>
+            {% endif %}
+            <li><span class="pager-back">– <a href="{% namespace_url "article-list" %}">{% trans "Back to Overview" %}</a> –</span></li>
+            {% if next_article %}
+                <li class="next"><a href="{{ next_article.get_absolute_url }}">{% trans "Next Article" %} <span aria-hidden="true">&rarr;</span></a></li>
+            {% else %}
+                <li class="next"><span class="text-muted">{% trans "Next Article" %} <span aria-hidden="true">&rarr;</span></span></li>
+            {% endif %}
+        </ul>
+    </div>
+    {% static_placeholder "newsblog_comments" %}
+
+        <div id="disqus_thread"></div>
+        <script>
+        /**
+        * RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+        * LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+        */
+        /*
+        var disqus_config = function () {
+        this.page.url = PAGE_URL; // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+        };
+        */
+        (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+
+        s.src = '//rawvana.disqus.com/embed.js';
+
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+        })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+        <script id="dsq-count-scr" src="//rawvana.disqus.com/count.js" async></script>
+
+{% endblock %}
